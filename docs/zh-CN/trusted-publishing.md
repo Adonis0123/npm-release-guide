@@ -2,8 +2,6 @@
 
 最后核实：2026-11-24
 
-> 状态：正在端到端验证，步骤可能调整。
-
 这一页说明如何把 `your-package` 绑定到 GitHub Actions。配好后，以后发新版本不需要访问令牌（Access Token），也不用弹第二重验证（Second Factor）。
 
 ## 什么是受信发布（Trusted Publishing）
@@ -52,7 +50,7 @@
 
 ## 怎么确认成功了
 
-- 打开 npmjs.com 上的 `your-package` 页面，看新版本是不是已经上线。
+- 打开 npmjs.com 上的 `your-package` 页面，看新版本是不是已经上线。我们实测时，GitHub 流程跑了约半分钟，再过约两分半 npm 上才查得到新版本，稍等一下是正常的 [F-72]。
 - 如果 GitHub 仓库和 npm 包都是公开的，npm 会自动加上构建来源证明（Provenance），不用加 `--provenance` [F-14]。私有仓库不会生成它，哪怕包是公开的也没有 [F-15]。
 - 不要用 `npm whoami` 测试受信发布，它不走受信发布 [F-13]。想查看已有绑定，让 Agent 把 `npx --yes npm@11 trust list your-package` 放进一行真实终端命令交给你运行 [F-06], [F-08]。
 
@@ -85,6 +83,7 @@
 - [F-44](../facts.md)
 - [F-63](../facts.md)
 - [F-69](../facts.md)
+- [F-72](../facts.md)
 
 [F-01]: ../facts.md
 [F-02]: ../facts.md
@@ -109,3 +108,4 @@
 [F-44]: ../facts.md
 [F-63]: ../facts.md
 [F-69]: ../facts.md
+[F-72]: ../facts.md

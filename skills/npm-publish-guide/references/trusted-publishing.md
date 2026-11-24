@@ -2,8 +2,6 @@
 
 Last verified: 2026-11-24
 
-> Status: being verified end-to-end; steps may change.
-
 This page explains how to link `your-package` to GitHub Actions so future versions publish with no Access Token and no Second Factor prompts.
 
 ## What Trusted Publishing is
@@ -52,7 +50,7 @@ Ask your Agent to release a new version (for example, "release a patch"). Your A
 
 ## How to check it worked
 
-- Open `your-package` on npmjs.com and confirm the new version is live.
+- Open `your-package` on npmjs.com and confirm the new version is live. In our run the workflow took about half a minute, and npm showed the new version about two and a half minutes later; a short wait is normal [F-72].
 - If your GitHub repository and package are both public, npm adds Provenance automatically without `--provenance` [F-14]. Private repositories do not get Provenance even for public packages [F-15].
 - Do not use `npm whoami` to test Trusted Publishing; it does not use Trusted Publishing [F-13]. To check existing links, ask your Agent to put `npx --yes npm@11 trust list your-package` in one line for your Real Terminal [F-06], [F-08].
 
@@ -85,6 +83,7 @@ If you're stuck: paste the error into your Agent and say "use npm-publish-guide"
 - [F-44](https://github.com/Adonis0123/npm-publish-guide/blob/main/docs/facts.md)
 - [F-63](https://github.com/Adonis0123/npm-publish-guide/blob/main/docs/facts.md)
 - [F-69](https://github.com/Adonis0123/npm-publish-guide/blob/main/docs/facts.md)
+- [F-72](https://github.com/Adonis0123/npm-publish-guide/blob/main/docs/facts.md)
 
 [F-01]: https://github.com/Adonis0123/npm-publish-guide/blob/main/docs/facts.md
 [F-02]: https://github.com/Adonis0123/npm-publish-guide/blob/main/docs/facts.md
@@ -109,3 +108,4 @@ If you're stuck: paste the error into your Agent and say "use npm-publish-guide"
 [F-44]: https://github.com/Adonis0123/npm-publish-guide/blob/main/docs/facts.md
 [F-63]: https://github.com/Adonis0123/npm-publish-guide/blob/main/docs/facts.md
 [F-69]: https://github.com/Adonis0123/npm-publish-guide/blob/main/docs/facts.md
+[F-72]: https://github.com/Adonis0123/npm-publish-guide/blob/main/docs/facts.md

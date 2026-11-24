@@ -54,7 +54,7 @@ What it is in one paragraph. One-time setup checklist, what the Agent does vs wh
 - You: paste one line that runs `npm trust github …` and `npm access set mfa=publish …`, approve in browser.
 - Everyday release afterwards: ask the Agent "release a patch"; it pushes a tag; GitHub publishes.
 - How to check it worked (Provenance shown on the npm page).
-Status banner: UNVERIFIED until a real end-to-end run succeeds.
+End-to-end run verified 2026-11-24 (F-72); no status banner.
 
 ### troubleshooting.md — by error text
 
