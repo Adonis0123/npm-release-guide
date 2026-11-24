@@ -26,6 +26,13 @@ npx skills add Adonis0123/npm-publish-guide
 
 每当 npm 需要你的第二重验证（Second Factor），Agent 会给你一行命令，粘贴到真实终端（Real Terminal）运行，再在自己的浏览器里点确认 [F-43], [F-44]。永远不要把验证码发进 Agent 聊天框。
 
+## 整个流程
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/publish-flow.zh-CN.dark.svg">
+  <img alt="流程：告诉 AI，AI 检查包；新包先在你自己的终端首次发布，再绑定一次 GitHub 和 npm；之后每次发版由 AI 推送 tag，GitHub 自动发布" src="docs/images/publish-flow.zh-CN.light.svg">
+</picture>
+
 ## 想自己弄明白？
 
 | 你的情况 | 看这一页 |

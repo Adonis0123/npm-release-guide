@@ -26,6 +26,13 @@ If you're stuck: paste the error into your Agent and say "use npm-publish-guide"
 
 When npm needs your Second Factor, your Agent gives you one line to paste into your Real Terminal; you approve in your own browser [F-43], [F-44]. Never type codes into the Agent chat.
 
+## How it works
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/publish-flow.en.dark.svg">
+  <img alt="Flow: ask your AI, it checks the package; a new package gets one first release from your own terminal, then GitHub is linked to npm once; after that every release is a tag your AI pushes and GitHub publishes" src="docs/images/publish-flow.en.light.svg">
+</picture>
+
 ## Want to understand it yourself?
 
 | Your situation | Read |
