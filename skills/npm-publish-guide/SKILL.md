@@ -78,16 +78,18 @@ Afterwards a release is a pushed tag: no stored token (F-04) and no Second Facto
 
 **Order:** a new link expires without a successful publish within 2 days (F-03). Push all repository work first, hand over the link last, push the first tag right after "done".
 
+**Settings:** `<workflow>` and `<env>` below come from `publish.workflow` and `publish.environment` in `.agents/release.json` (nearest file from the package folder up to the Git root; a `packages[]` entry whose `dir` is this folder overrides the top level). Without the file, use `release.yml` and `npm`; you may offer to save them there (`{"version": 1, "publish": {"workflow": …, "environment": …}}`) after showing the content and getting a yes.
+
 What you do (tell the Publisher the plan and get a yes first):
 
-1. Copy `templates/release.yml` to `.github/workflows/release.yml` at the Git root (`package_dir_in_repo` not `.`: set its `working-directory` lines). Edit only `PACKAGE MANAGER` lines; pnpm needs `packageManager` in `package.json`. Keep the file name (F-12).
+1. Copy `templates/release.yml` to `.github/workflows/<workflow>` at the Git root (`package_dir_in_repo` not `.`: set its `working-directory` lines; `<env>` not `npm`: set its `environment:` line). Edit only `PACKAGE MANAGER` lines; pnpm needs `packageManager` in `package.json`. Never rename the file later (F-12).
 2. Set `"repository": { "type": "git", "url": "git+https://github.com/<owner>/<repo>.git" }` matching GitHub exactly, case included (F-11, F-12); add `"directory"` for a subfolder package.
-3. Create the environment `npm` for `v*` tags only (needs `gh auth status` and admin rights):
+3. Create the environment `<env>` for `v*` tags only (needs `gh auth status` and admin rights):
 
    ```sh
-   printf '%s' '{"deployment_branch_policy":{"protected_branches":false,"custom_branch_policies":true}}' | gh api -X PUT repos/<owner>/<repo>/environments/npm --input -
-   gh api -X POST repos/<owner>/<repo>/environments/npm/deployment-branch-policies -f name='v*' -f type=tag
-   gh api repos/<owner>/<repo>/environments/npm/deployment-branch-policies --jq '.branch_policies[] | "\(.name) \(.type)"'
+   printf '%s' '{"deployment_branch_policy":{"protected_branches":false,"custom_branch_policies":true}}' | gh api -X PUT repos/<owner>/<repo>/environments/<env> --input -
+   gh api -X POST repos/<owner>/<repo>/environments/<env>/deployment-branch-policies -f name='v*' -f type=tag
+   gh api repos/<owner>/<repo>/environments/<env>/deployment-branch-policies --jq '.branch_policies[] | "\(.name) \(.type)"'
    ```
 
    Expect `v* tag`; without `type=tag` it was stored as a branch rule and tags were rejected (F-63, observed).
@@ -98,7 +100,7 @@ What the Publisher does (one handoff):
 ```sh
 sh <skill-dir>/scripts/handoff.sh \
   -n "Log in to npm if needed." 'npm whoami >/dev/null 2>&1 || npm login' \
-  -n "Let GitHub publish this package." 'npx --yes npm@11 trust github <pkg> --file release.yml --repo <owner>/<repo> --env npm --allow-publish --yes' \
+  -n "Let GitHub publish this package." 'npx --yes npm@11 trust github <pkg> --file <workflow> --repo <owner>/<repo> --env <env> --allow-publish --yes' \
   -n "Stop Access Tokens from publishing this package." 'npx --yes npm@11 access set mfa=publish <pkg>' \
   -n "Show the new link." 'npx --yes npm@11 trust list <pkg>'
 ```
@@ -114,10 +116,10 @@ Then push the first tag as in "Everyday release". If a link exists but never pub
 
 No Second Factor is needed once Trusted Publishing works (F-10).
 
-1. Get a yes on the exact version (patch for fixes, minor for features). Check: default branch, `git status --porcelain` empty, not behind after `git fetch`.
-2. Read the `version` hooks (rule 6), then `npm version <patch|minor> -m "chore(release): v%s"`. Confirm the tag exists (`git tag -l v<version>`); in a subfolder package create the commit and tag yourself if it did not.
-3. Push only that commit and tag: `git push origin <branch>` and `git push origin refs/tags/v<version>`. Never `--follow-tags`: it also pushes other local tags.
-4. Find this run: `gh run list --workflow release.yml --branch v<version> --json databaseId,headSha,status`; match `headSha` to `git rev-parse v<version>^{commit}`, then `gh run watch <id> --exit-status`.
+1. Get one confirmed exact version (the planned version). If npm-version-guide handed over a package name, exact version, release type and local state, use them; do not pick again. Otherwise, if `<skill-dir>/../npm-version-guide/SKILL.md` exists, read it and follow its steps 2 to 4; without it, patch for fixes, minor for features, work out the exact version and get a yes. A requested beta stays a Pre-release. Check: default branch, `git status --porcelain` empty, not behind after `git fetch`.
+2. If `package.json` already has the planned version and `git tag -l v<version>` shows its tag, skip this step. Otherwise read the `version` hooks (rule 6), then `npm version <planned version> -m "chore(release): v%s"` (F-85). Confirm the tag exists; in a subfolder package create the commit and tag yourself if it did not.
+3. Before pushing, check that `node -p "require('./package.json').version"` and the tag both equal the planned version; if not, stop and tell the Publisher. Push only that commit and tag: `git push origin <branch>` and `git push origin refs/tags/v<version>`. Never `--follow-tags`: it also pushes other local tags.
+4. Find this run: `gh run list --workflow <workflow> --branch v<version> --json databaseId,headSha,status`; match `headSha` to `git rev-parse v<version>^{commit}`, then `gh run watch <id> --exit-status`.
 5. Rerun diagnose: `local_version_on_npm` yes, `latest_published_by: trusted-publishing (github)`, Provenance yes for public repositories (F-68, observed).
 6. On failure (`gh run view <id> --log-failed`): a wrong workflow file name shows as `ENEEDAUTH` (F-12); also check environment name, owner/repo, `repository.url`. Fix it and release the next patch; never move a pushed tag. Pre-release versions publish under `next` (F-53).
 

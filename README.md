@@ -1,26 +1,42 @@
-# npm-publish-guide
+# npm-release-guide
 
 [简体中文](README.zh-CN.md)
 
 Last verified: 2026-11-24
 
-Publish npm packages without getting stuck on two-factor prompts. No coding needed: when you run into a problem, hand it to your Agent.
+Pick the right version number and publish npm packages without getting stuck on two-factor prompts. No coding needed: hand it to your Agent.
 
 ## Start here
 
-Install the skill (requires Node.js 22.20 or later [F-61]):
+Install both skills into your project (recommended; requires Node.js 22.20 or later [F-61]):
 
 ```sh
-npx skills add Adonis0123/npm-publish-guide
+npx skills add Adonis0123/npm-release-guide
 ```
 
-This installs the `npm-publish-guide` skill from `skills/npm-publish-guide/SKILL.md` [F-60].
+This installs `npm-publish-guide` and `npm-version-guide` into the current project from `skills/*/SKILL.md` [F-60], [F-111]. Commit the installed folder and `skills-lock.json` so teammates get the same setup [F-111], [F-112].
+
+- Install only one: `npx skills add Adonis0123/npm-release-guide --skill npm-version-guide` (or `--skill npm-publish-guide`) (observed to work in our test [F-113])
+- Update later: `npx skills update` [F-112]
+- Pin a version: `npx skills add Adonis0123/npm-release-guide@v0.1.0` (from the CLI docs; not run in our test [F-113])
+
+Claude Code users can install as a plugin instead [F-114] (automatic updates for third-party marketplaces are off by default [F-115]):
+
+```text
+/plugin marketplace add Adonis0123/npm-release-guide
+/plugin install npm-release-guide@npm-release-guide
+```
 
 Then tell your AI coding agent (Claude Code, Codex, Cursor, …):
 
-> Publish this project to npm using npm-publish-guide.
+- To publish: `Publish this project to npm using npm-publish-guide.`
+- To pick a version number: `Which version should the next release be? Use npm-version-guide.`
 
-If you're stuck: paste the error into your Agent and say "use npm-publish-guide".
+If you're stuck: paste the error into your Agent and say "use npm-publish-guide" (or "use npm-version-guide").
+
+## Project settings
+
+The first time you run a skill in a project, your Agent inspects the repo, shows you the settings it inferred, and asks once (yes or no) whether to save them to `.agents/release.json`. Commit that file; after that, your Agent uses it automatically. See [config](skills/npm-version-guide/references/config.md) for the file format.
 
 ## The one rule
 
@@ -37,6 +53,7 @@ When npm needs your Second Factor, your Agent gives you one line to paste into y
 
 | Your situation | Read |
 | --- | --- |
+| Not sure which version number to use | [versioning](skills/npm-version-guide/references/versioning.md) |
 | Publishing a brand-new package | [first-release](skills/npm-publish-guide/references/first-release.md) |
 | Publishing a new version from your computer | [local-release](skills/npm-publish-guide/references/local-release.md) |
 | Want GitHub to publish for you, no more prompts | [trusted-publishing](skills/npm-publish-guide/references/trusted-publishing.md) |
@@ -58,8 +75,18 @@ MIT
 - [F-44](docs/facts.md)
 - [F-60](docs/facts.md)
 - [F-61](docs/facts.md)
+- [F-111](docs/facts.md)
+- [F-112](docs/facts.md)
+- [F-113](docs/facts.md)
+- [F-114](docs/facts.md)
+- [F-115](docs/facts.md)
 
 [F-43]: docs/facts.md
 [F-44]: docs/facts.md
 [F-60]: docs/facts.md
 [F-61]: docs/facts.md
+[F-111]: docs/facts.md
+[F-112]: docs/facts.md
+[F-113]: docs/facts.md
+[F-114]: docs/facts.md
+[F-115]: docs/facts.md

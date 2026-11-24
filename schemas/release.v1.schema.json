@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Adonis0123/npm-release-guide/main/schemas/release.v1.schema.json",
+  "title": "npm-release-guide project settings (.agents/release.json)",
+  "description": "Per-project release settings read by the npm-version-guide and npm-publish-guide skills. Top-level publish and versioning are defaults; an entry in packages overrides them for one package folder.",
+  "type": "object",
+  "required": [
+    "version"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Editor hint. Use the versioned URL of this file."
+    },
+    "version": {
+      "const": 1,
+      "description": "Settings format version."
+    },
+    "publish": {
+      "$ref": "#/$defs/publish"
+    },
+    "versioning": {
+      "$ref": "#/$defs/versioning"
+    },
+    "packages": {
+      "type": "array",
+      "description": "Per-package overrides in a monorepo. npm links Trusted Publishing per package, so each package may name its own workflow and environment.",
+      "items": {
+        "$ref": "#/$defs/package"
+      }
+    }
+  },
+  "$defs": {
+    "publish": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "workflow": {
+          "type": "string",
+          "pattern": "^[^/\\\\]+\\.ya?ml$",
+          "default": "release.yml",
+          "description": "File name (not path) of the GitHub workflow that publishes through Trusted Publishing; the same value as --file in `npm trust github`."
+        },
+        "environment": {
+          "type": "string",
+          "minLength": 1,
+          "default": "npm",
+          "description": "GitHub environment the publishing job runs in; the same value as --env in `npm trust github`."
+        },
+        "prereleaseTag": {
+          "type": "string",
+          "pattern": "^(?!latest$)(?![vV]?\\d)(?![xX](?:\\.|$))[A-Za-z][A-Za-z0-9._-]*$",
+          "default": "next",
+          "description": "Release Tag (npm dist-tag) for Pre-release versions. Not latest (plain installs would get the Pre-release) and not a name npm reads as a version range, such as v1.4 or x (F-89). The release.yml template uses next; change both together."
+        }
+      }
+    },
+    "versioning": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "zeroMajor": {
+          "enum": [
+            "minor",
+            "major"
+          ],
+          "default": "minor",
+          "description": "How 0.x versions bump. minor: a Breaking Change raises the minor number, features and fixes raise the patch number. major: same rules as 1.x and later, so a Breaking Change goes to 1.0.0."
+        },
+        "preid": {
+          "type": "string",
+          "pattern": "^(?!0\\d+$)[0-9A-Za-z-]+$",
+          "default": "beta",
+          "description": "Pre-release identifier for new Pre-release lines (the beta in 1.2.0-beta.0). A number must not start with 0 (SemVer)."
+        },
+        "tagPrefix": {
+          "type": "string",
+          "default": "v",
+          "description": "Prefix of the git tags that already mark this package's releases, used to find the last release. It does not change the tag npm version creates; that comes from npm's tag-version-prefix setting (F-87). In a monorepo, set it in the package's entry to say that these tags belong to that package."
+        },
+        "publicInterface": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": "Paths or globs, relative to the package folder, that make up the Public Interface. A fix, refactor or perf commit touching them is sent to the Agent for review. Default: the files behind exports, main, module, types and bin."
+        }
+      }
+    },
+    "package": {
+      "type": "object",
+      "required": [
+        "dir"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "dir": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Package folder relative to the folder that holds .agents/, for example packages/core."
+        },
+        "publish": {
+          "$ref": "#/$defs/publish"
+        },
+        "versioning": {
+          "$ref": "#/$defs/versioning"
+        }
+      }
+    }
+  }
+}

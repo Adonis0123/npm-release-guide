@@ -18,7 +18,7 @@ English pages live in `skills/npm-publish-guide/references/` (installed with the
 1. Language switch link under the title.
 2. One-sentence promise: publish npm packages without getting stuck on two-factor prompts.
 3. **Start here (first screen)**:
-   - Install: `npx skills add Adonis0123/npm-publish-guide`
+   - Install: `npx skills add Adonis0123/npm-release-guide`
    - Then tell your Agent: "Publish this project to npm using npm-publish-guide." When stuck, paste the error text to the Agent.
 4. **The one rule to remember**: when npm needs your Second Factor, your Agent hands you one line to paste into your Real Terminal; you approve in your own browser. Never type codes into the Agent chat.
 5. **Want to understand it yourself?** situation table:

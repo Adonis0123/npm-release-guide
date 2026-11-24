@@ -1,0 +1,23 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "npm-release-guide",
+  "owner": {
+    "name": "Adonis0123",
+    "url": "https://github.com/Adonis0123"
+  },
+  "metadata": {
+    "description": "Agent skills for releasing npm packages: pick the next version, then publish without getting stuck on two-factor prompts."
+  },
+  "plugins": [
+    {
+      "name": "npm-release-guide",
+      "source": "./",
+      "strict": false,
+      "description": "Two skills: npm-version-guide picks patch, minor or major from commits and package.json changes; npm-publish-guide publishes through GitHub Trusted Publishing and hands every two-factor step to the Publisher's own terminal.",
+      "homepage": "https://github.com/Adonis0123/npm-release-guide",
+      "license": "MIT",
+      "category": "development",
+      "skills": ["./skills/npm-publish-guide", "./skills/npm-version-guide"]
+    }
+  ]
+}

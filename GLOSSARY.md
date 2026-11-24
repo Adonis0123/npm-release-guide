@@ -69,3 +69,29 @@ _Avoid_: NPM_TOKEN, granular token, automation token (except when naming the npm
 **Provenance**:
 The public record on a package version saying which repository and workflow built it.
 _Avoid_: attestation, SLSA (except when quoting npm)
+
+### Choosing a version number
+
+**Version Bump**:
+The step that raises a package's version before a release, by one of three levels: Patch, Minor or Major.
+_Avoid_: version upgrade, increment
+
+**Breaking Change**:
+A change after which some existing user of the package must change their own code or settings to keep working.
+_Avoid_: incompatible change, BC break
+
+**Public Interface**:
+Everything a user of the package can rely on: entry points, commands, options, defaults, output formats and supported Node.js versions.
+_Avoid_: API (when the whole surface is meant)
+
+**Pre-release**:
+A version with a suffix such as `-beta.1` that users only get when they ask for it by name or tag.
+_Avoid_: beta version, canary (except when quoting a tag name)
+
+**Release Tag**:
+The npm label (such as `latest` or `next`) that decides which version a plain install gets.
+_Avoid_: dist-tag (except in commands), channel
+
+**Bump Suggestion**:
+The level a script derives from the commits and `package.json` changes since the last release, plus the list of changes it could not classify.
+_Avoid_: recommended bump, auto version
