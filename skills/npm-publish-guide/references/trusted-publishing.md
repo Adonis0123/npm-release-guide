@@ -21,7 +21,7 @@ Trusted Publishing creates a link between your package on npm and a CI workflow.
 - Adds the `release.yml` workflow from the skill template, including `permissions: id-token: write` [F-11] and the required Node.js and npm versions [F-02].
 - Creates the GitHub `npm` environment limited to `v*` tags. In our runs, creating that rule without `type=tag` stored it as a branch rule, which blocked `v*` tags; adding the rule with `type=tag` and pattern `v*` worked [F-63].
 - Checks that `repository.url` in `package.json` matches your GitHub repository exactly [F-11].
-- When you release, bumps the version with `npm version` and pushes only that version's tag.
+- When you release, uses your repository's own release command if it has one (after reading it); otherwise bumps the version with `npm version` and pushes only that version's tag.
 - Prepares one line for your Real Terminal.
 
 ### What you do in your Real Terminal
@@ -46,7 +46,7 @@ When npm needs your Second Factor, your Agent gives you one line to paste into y
 
 ## Everyday releases afterwards
 
-Ask your Agent to release a new version (for example, "release a patch"). Your Agent bumps the version and pushes a version tag, and GitHub Actions publishes `your-package` as an Automated Release.
+Ask your Agent to release a new version (for example, "release a patch"). Your Agent bumps the version and pushes a version tag, and GitHub Actions publishes `your-package` as an Automated Release. If your repository already has its own release command (for example a `release` script in `package.json`), your Agent reads it and uses it when it makes the version you agreed to and does not publish from your computer; it tells you which command it will use before it starts.
 
 ## How to check it worked
 

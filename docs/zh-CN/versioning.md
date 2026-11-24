@@ -88,6 +88,8 @@ npm 的版本库（`node-semver`）沿用了这个习惯：它的脱字符规则
 
 Changesets、`release-please` 这类工具适合一个仓库里联动发布多个包的场景。本指南保留 `npm version` 加 `v*` 标签 [F-86], [F-87]，因为配置更简单：在 GitHub Actions 里，用内置 `GITHUB_TOKEN` 推上去的标签不会触发其他工作流 [F-104]（`release-please-action` 因此需要额外配个人访问令牌 [F-105]；`changesets/action` 除非另传 `github-token`，默认使用 GitHub 提供的令牌，但其标签是否同样无法触发工作流未经 Changesets 官方证实，只是根据 [F-104] 推断 [F-106]），而且 Changesets 暂不支持暂存发布 [F-107]。
 
+如果你的仓库已经有自己的发版命令（比如 `package.json` 里的 `release` 脚本，或 `CONTRIBUTING.md` 里写明的命令），Agent 会先读懂它，再改用它发版。前提是它能做出你确认过的那个版本号，而且不会在你的电脑上直接发布到 npm。Agent 问你“是 / 否”时会说明用哪条命令；如果退回用 `npm version`（比如发预发布版本），也会说明原因。Agent 自己跑 `npm version` 时，提交信息照你上一次发版提交的格式写，没有的话用 `chore(release): v<版本号>` [F-119]。
+
 ## 关于日历版本（CalVer）
 
 日历版本把发布日期放进版本号，刻意不传达破坏性变更 [F-108]；带前导零的日期（如 `2026.01.05`）不是合法的 SemVer [F-109]（实测 npm 10.9.9 也是这样表现 [F-110]），而且 npm 默认的 `^` 范围仍会把跳动的日期段当成主版本号或次版本号变化来算 [F-109]。
@@ -133,6 +135,7 @@ Changesets、`release-please` 这类工具适合一个仓库里联动发布多�
 - [F-108](../facts.md)
 - [F-109](../facts.md)
 - [F-110](../facts.md)
+- [F-119](../facts.md)
 
 [F-53]: ../facts.md
 [F-73]: ../facts.md
@@ -171,3 +174,4 @@ Changesets、`release-please` 这类工具适合一个仓库里联动发布多�
 [F-108]: ../facts.md
 [F-109]: ../facts.md
 [F-110]: ../facts.md
+[F-119]: ../facts.md

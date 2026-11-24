@@ -21,6 +21,7 @@ const DEFAULTS = {
   versioning: { zeroMajor: 'minor', preid: 'beta', tagPrefix: 'v' },
 }
 const LEVELS = ['none', 'patch', 'minor', 'major']
+const DEFAULT_COMMIT_FORMAT = 'chore(release): v%s'
 const INTERFACE_SENSITIVE_TYPES = new Set(['fix', 'refactor', 'perf'])
 const MAX_TEXT_COMMITS = 40
 
@@ -475,10 +476,34 @@ function findLastRelease(root, name, prefix, current, prefixTrusted) {
   if (!pool.length) return null
   const highest = [...pool].sort((a, b) => compareVersions(b.v, a.v))[0]
   const exact = pool.find((x) => compareVersions(x.v, current) === 0)
-  if (exact) return { ref: exact.tag, how: 'tag for the current package.json version', highest: highest.v }
+  if (exact) return { ref: exact.tag, how: 'tag for the current package.json version', highest: highest.v, version: exact.v }
   const notAbove = pool.filter((x) => compareVersions(x.v, current) <= 0)
   const best = (notAbove.length ? notAbove : pool).sort((a, b) => compareVersions(b.v, a.v))[0]
-  return { ref: best.tag, how: 'highest version tag reachable from HEAD', highest: highest.v }
+  return { ref: best.tag, how: 'highest version tag reachable from HEAD', highest: highest.v, version: best.v }
+}
+
+// ---------- the repository's own release habits ----------
+
+// A "release" script in package.json (and in the root package.json of a monorepo). Printed, never run.
+function releaseScripts(pkg, root, pkgRel) {
+  const found = []
+  if (typeof pkg.scripts?.release === 'string') found.push(`package.json scripts.release: ${pkg.scripts.release}`)
+  if (pkgRel !== '.') {
+    let rootPkg = null
+    try { rootPkg = JSON.parse(readFileSync(path.join(root, 'package.json'), 'utf8')) } catch { rootPkg = null }
+    if (typeof rootPkg?.scripts?.release === 'string') found.push(`root package.json scripts.release: ${rootPkg.scripts.release}`)
+  }
+  return found
+}
+
+// The last release commit's subject with its version replaced by %s, ready for npm version -m (F-119).
+function releaseCommitFormat(root, base) {
+  if (!base) return { format: DEFAULT_COMMIT_FORMAT, from: 'default (no release tag yet)' }
+  if (!base.version) return { format: DEFAULT_COMMIT_FORMAT, from: `default (${base.ref} names no version)` }
+  const version = formatVersion(base.version)
+  const subject = (git(root, ['log', '-1', '--format=%s', `${base.ref}^{commit}`], { allowFail: true }) || '').trim()
+  if (!subject.includes(version)) return { format: DEFAULT_COMMIT_FORMAT, from: `default (the commit of ${base.ref} does not name ${version})` }
+  return { format: subject.split(version).join('%s'), from: `the commit of ${base.ref}` }
 }
 
 function isMonorepo(root, pkgRel, cfg) {
@@ -601,6 +626,7 @@ function analyse({ cwd = process.cwd(), packageDir = null, since = null } = {}) 
 
   const status = git(root, ['status', '--porcelain', '--untracked-files=no'], { allowFail: true })
   r.working_tree_clean = status === null ? 'unknown' : status.trim() === '' ? 'yes' : 'no (npm version refuses to run, F-86)'
+  r.release_script = releaseScripts(pkg, root, pkgRel)
 
   const prefix = v.tagPrefix ?? 'v'
   const prefixTrusted = !isMonorepo(root, pkgRel, cfg) || cfg.raw?.versioning?.tagPrefix !== undefined || cfg.entry?.versioning?.tagPrefix !== undefined
@@ -625,6 +651,9 @@ function analyse({ cwd = process.cwd(), packageDir = null, since = null } = {}) 
     return r
   }
   r.last_release = base ? `${base.ref} (${base.how})` : `none (no ${prefix}* or ${pkg.name}@* tag reachable from HEAD)`
+  const commitFormat = releaseCommitFormat(root, base)
+  r.release_commit_format = commitFormat.format
+  r.release_commit_format_from = commitFormat.from
   r.current_is_prerelease = current.pre.length ? 'yes' : 'no'
 
   const pathspec = pkgRel === '.' ? null : pkgRel
@@ -728,6 +757,9 @@ function printText(r) {
       for (const s of val) say('signal', `${s.level} package.json ${s.text}`)
     } else if (k === 'needs_ai') {
       for (const n of val) say('needs_ai', `${n.ref}${n.at_least ? ` (at least ${n.at_least})` : ''} ${n.reason}${n.subject ? ` | ${n.subject}` : ''}`)
+    } else if (k === 'release_script') {
+      if (!val.length) say(k, 'none in package.json (check AGENTS.md, CLAUDE.md and CONTRIBUTING.md for a release command)')
+      for (const s of val) say(k, s)
     } else if (k === 'config_errors') {
       for (const e of val) say('config_error', e)
     } else if (k === 'config_proposal') {

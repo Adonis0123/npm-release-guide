@@ -13,8 +13,8 @@ Stay in the package folder. Call the script by full path: `node <skill-dir>/scri
 
 1. **Never publish and never push.** No `git push`, no tag push. This skill ends with a version set locally.
 2. **Never run a command that needs a Second Factor**: `npm publish`, `npm unpublish`, `npm deprecate`, `npm dist-tag add|rm`, `npm access`, `npm trust`, `npm login`, `npm token`, `npm owner`. When one is needed, use npm-publish-guide if it is installed; otherwise show the Publisher the one line to paste into their own Terminal app, say what it does, and never ask for a one-time code in chat.
-3. **One yes before anything changes.** One plain sentence with the exact version, the release type and what `npm version` will create locally (a commit and a tag), plus the settings file if one would be written; then yes or no. If the Publisher only asked for advice, give the result and change nothing.
-4. **Never run a project script you have not read.** Before `npm version`, read the `preversion`, `version` and `postversion` scripts; never run one that publishes or pushes.
+3. **One yes before anything changes.** One plain sentence with the exact version, the release type and what `npm version` (or the repository's own release command) will do, plus the settings file if one would be written; then yes or no. If the Publisher only asked for advice, give the result and change nothing.
+4. **Never run a project script you have not read.** Before `npm version`, read the `preversion`, `version` and `postversion` scripts; before the repository's own release command, read it and what it calls. Never run one that publishes or pushes.
 5. **Never change a released version** (F-75). A mistake is fixed by a new version, never by moving or deleting a pushed tag.
 
 ## Step 1: what does the Publisher want?
@@ -47,7 +47,7 @@ It only reads: no files written, no git changes, no project scripts. `--json` gi
 | `fix-config` | `.agents/release.json` is broken: show the `config_error:` lines, propose the fix, write it after a yes, rerun. Never continue on a broken file. |
 | `no-git` / `no-package-json` / `fix-package-json` | Find the package folder, or help fix `name`/`version`. Without Git, ask what changed since the last release and judge it as in step 3. |
 
-Key lines: `last_release`, `commit:` (level per change; `(review)` marks a lower bound), `signal:` (package.json changes such as a removed `bin` command or a narrowed `engines.node`), `raw_level`, `suggested_level` (after the `0.x` rule in `level_rule`), `next_version`, `prerelease_version`, `working_tree_clean`, `publish_workflow_found`.
+Key lines: `last_release`, `commit:` (level per change; `(review)` marks a lower bound), `signal:` (package.json changes such as a removed `bin` command or a narrowed `engines.node`), `raw_level`, `suggested_level` (after the `0.x` rule in `level_rule`), `next_version`, `prerelease_version`, `working_tree_clean`, `publish_workflow_found`, `release_script` (the repository's own `release` script, if any), `release_commit_format` (the message for `npm version -m`, taken from the last release commit; `release_commit_format_from` says where it came from).
 
 ## Step 3: judge only the needs_ai items
 
@@ -71,6 +71,7 @@ Before asking, run `npm pack --dry-run --ignore-scripts` and check the file list
 - `0.x`: mention once that `^0.4.2` users get `0.4.3` automatically but not `0.5.0` (F-94, F-98).
 - Pre-release: give `prerelease_version` and say it goes out under the Release Tag `prerelease_tag` (default `next`), so plain installs keep the current version (F-88, F-97). Never offer `next_version` when the Publisher asked for a beta.
 - The current version is already a Pre-release: offer the two exact versions in the one question, the next Pre-release (`prerelease_version`) or the final release (`next_version`, `release_mode`).
+- The repository has its own release command (`release_script:`, or one named in `AGENTS.md`, `CLAUDE.md` or `CONTRIBUTING.md`): read it (rule 4) and say in the same question what happens to it. It only sets the version locally and can make the confirmed version (it takes that version, or a level that gives it, F-85): you run it instead of `npm version`. It also pushes (a commit or a tag for a release workflow), without publishing from this machine: you change nothing now, because running `npm version` first would make it bump twice; the release goes through that command (npm-publish-guide runs it when the Publisher wants to publish). When npm-publish-guide runs these steps for a release now, say instead that it will release with that command. It publishes from this machine, or cannot make the confirmed version (a Pre-release or an exact number it does not take): you use `npm version` and say why in one clause.
 
 ## Step 5: write the settings (only if part of the yes)
 
@@ -78,10 +79,10 @@ Write exactly what was shown, before `npm version`, apply any `files` change tha
 
 ## Step 6: set the version
 
-Check `working_tree_clean: yes` (`npm version` refuses otherwise, F-86) and that this is the default branch. Read the hooks (rule 4). Then use the exact version (F-85):
+If step 4 left the release to the repository's own command, skip this step. Check `working_tree_clean: yes` (`npm version` refuses otherwise, F-86) and that this is the default branch. Read the hooks (rule 4). If step 4 chose the repository's command, run it with the confirmed version or level, then do the checks below. Otherwise use the exact version (F-85), with the message the repository already uses for releases (`release_commit_format:`; `%s` becomes the version, F-119):
 
 ```sh
-npm version <exact version> -m "chore(release): v%s"
+npm version <exact version> -m "<release_commit_format>"
 ```
 
 `npm version` makes a commit and a tag in a Git repository (F-86). The tag name is npm's `tag-version-prefix` setting plus the version, `v` by default (F-87); `tagPrefix` in the settings only tells the script which existing tags mark releases. If the repository's release workflow listens for another prefix, add `--tag-version-prefix=<prefix>` to the command.
@@ -90,10 +91,10 @@ Then check: `node -p "require('./package.json').version"` equals the confirmed v
 
 ## Step 7: close and hand over
 
-Report four facts and stop: package name, exact version, release type (normal release under `latest`, or Pre-release under `prerelease_tag`), and local state (commit, tag name, nothing pushed or published).
+Report four facts and stop: package name, exact version, release type (normal release under `latest`, or Pre-release under `prerelease_tag`), and local state (commit, tag name, nothing pushed or published; or nothing changed yet because the repository's own release command, named here, will set the version).
 
-- Only if the Publisher explicitly asks to publish now: if npm-publish-guide is installed, continue with its "Everyday release", giving it those four facts; it publishes this exact version, never a level.
-- Otherwise end with one sentence. `publish_workflow_found: yes`: "Pushing this commit and the tag `<tag>` starts your release workflow `<workflow>`, which publishes it; tell me when you want that." `publish_workflow_found: no`: "Publishing is a step in your own Terminal app that needs your Second Factor (`npm publish`, plus `--tag <prerelease_tag>` for a Pre-release); npm-publish-guide can walk you through it."
+- Only if the Publisher explicitly asks to publish now: if npm-publish-guide is installed, continue with its "Everyday release", giving it those four facts; it publishes this exact version, and passes a level only to the repository's own command when that level gives this version.
+- Otherwise end with one sentence. Release left to the repository's own command: "Your release command `<command>` sets `<version>` and starts the release; tell me when you want that." `publish_workflow_found: yes`: "Pushing this commit and the tag `<tag>` starts your release workflow `<workflow>`, which publishes it; tell me when you want that." `publish_workflow_found: no`: "Publishing is a step in your own Terminal app that needs your Second Factor (`npm publish`, plus `--tag <prerelease_tag>` for a Pre-release); npm-publish-guide can walk you through it."
 
 ### First release
 

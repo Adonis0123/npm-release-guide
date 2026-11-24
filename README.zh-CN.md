@@ -20,6 +20,19 @@ npx skills add Adonis0123/npm-release-guide
 - 以后更新：`npx skills update` [F-112]
 - 锁定版本：`npx skills add Adonis0123/npm-release-guide@v0.1.0`（据 CLI 文档，暂未实测 [F-113]）
 
+**项目里已经有 `skills/` 目录？** 安装工具会把名叫 `skills/` 的目录当成 OpenClaw 这个 Agent 的目录 [F-116]，所以可能在里面多建两个链接：`skills/npm-publish-guide` 和 `skills/npm-version-guide`，和你自己的技能放在一起 [F-118]。在 `.gitignore` 里加这两行，Git 就不会把它们算进去（末尾不要加 `/`，加了 Git 不会忽略 [F-118]）：
+
+```text
+skills/npm-publish-guide
+skills/npm-version-guide
+```
+
+安装时也可以写明你用的 Agent（其他 Agent 的名字见[支持列表](https://github.com/vercel-labs/skills/blob/main/docs/agents.md)）[F-117]。我们实测时，之后跑 `npx skills update` 仍会把链接加回来，所以 `.gitignore` 那两行也要留着 [F-118]：
+
+```sh
+npx skills add Adonis0123/npm-release-guide -a claude-code -a codex
+```
+
 Claude Code 用户也可以改用插件方式安装 [F-114]（第三方插件市场的自动更新默认关闭 [F-115]）：
 
 ```text
@@ -80,6 +93,9 @@ MIT
 - [F-113](docs/facts.md)
 - [F-114](docs/facts.md)
 - [F-115](docs/facts.md)
+- [F-116](docs/facts.md)
+- [F-117](docs/facts.md)
+- [F-118](docs/facts.md)
 
 [F-43]: docs/facts.md
 [F-44]: docs/facts.md
@@ -90,3 +106,6 @@ MIT
 [F-113]: docs/facts.md
 [F-114]: docs/facts.md
 [F-115]: docs/facts.md
+[F-116]: docs/facts.md
+[F-117]: docs/facts.md
+[F-118]: docs/facts.md

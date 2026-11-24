@@ -50,7 +50,7 @@ When this is still needed (no CI yet; `npm deprecate` / `dist-tag` style changes
 ### trusted-publishing.md — let GitHub publish for you
 
 What it is in one paragraph. One-time setup checklist, what the Agent does vs what you do:
-- Agent: add `release.yml` from the template, create the GitHub `npm` environment limited to `v*` tags (note the `type=tag` pitfall), on release, bump with `npm version` and push only `refs/tags/v<version>`.
+- Agent: add `release.yml` from the template, create the GitHub `npm` environment limited to `v*` tags (note the `type=tag` pitfall), on release, use the repository's own release command when it can make the confirmed version without a local publish, else bump with `npm version` and push only `refs/tags/v<version>`.
 - You: paste one line that runs `npm trust github …` and `npm access set mfa=publish …`, approve in browser.
 - Everyday release afterwards: ask the Agent "release a patch"; it pushes a tag; GitHub publishes.
 - How to check it worked (Provenance shown on the npm page).

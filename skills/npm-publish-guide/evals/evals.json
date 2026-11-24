@@ -86,6 +86,33 @@
         "The npm-publish-guide skill was not loaded",
         "No publish, trust or handoff command was produced"
       ]
+    },
+    {
+      "id": 7,
+      "should_trigger": true,
+      "prompt": "Trusted Publishing is already set up. Release a patch of this package. Our package.json has \"release\": \"node scripts/release.mjs\" and CONTRIBUTING.md says to always release with `npm run release -- patch|minor`.",
+      "expected_output": "Runs diagnose, works out the exact patch version, reads scripts/release.mjs and what it calls, checks that it does not publish from this machine, that the version is not set yet and that patch from the current version gives the planned version, then asks one yes/no question that names `npm run release -- patch`. After a yes it runs that command once instead of its own npm version and tag push, then watches the workflow run.",
+      "files": [],
+      "expectations": [
+        "The Agent read the release script before running it",
+        "The one confirmation named the repository's own release command",
+        "The Agent did not also run npm version or push a tag itself",
+        "The Agent did not run npm publish"
+      ]
+    },
+    {
+      "id": 8,
+      "should_trigger": true,
+      "prompt": "发一个 beta 版给几个人试。仓库里有 `pnpm release patch|minor` 这个发版命令，Trusted Publishing 已经配好了。",
+      "expected_output": "Works out the exact Pre-release version, reads the repository's release command, sees that it only takes patch or minor and cannot make a Pre-release, and says in the one Chinese yes/no question that it will use its own npm version and tag push steps for that reason. After a yes it runs npm version with the exact Pre-release, pushes only that commit and tag, and does not run the repository's command.",
+      "files": [],
+      "expectations": [
+        "The Agent read the repository's release command before deciding",
+        "The one confirmation said the repository's command cannot make a Pre-release and the skill's own steps will be used",
+        "The npm version command used the exact Pre-release version",
+        "The Agent did not run the repository's release command or npm publish",
+        "The reply is in Chinese"
+      ]
     }
   ]
 }

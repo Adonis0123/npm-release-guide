@@ -21,7 +21,7 @@
 - 从技能模板添加 `release.yml` 工作流，里面带上 `permissions: id-token: write` [F-11] 以及要求的 Node.js 和 npm 版本 [F-02]。
 - 创建只允许 `v*` 标签使用的 GitHub `npm` 环境。在我们的实测中，建规则时漏掉 `type=tag` 会被存成分支规则，导致 `v*` 标签无法触发该环境；带上 `type=tag` 和 `v*` 规则后正常生效 [F-63]。
 - 核对 `package.json` 里的 `repository.url`，确保与 GitHub 仓库完全一致 [F-11]。
-- 发版时用 `npm version` 升版本号，只推送这个版本的标签。
+- 发版时，仓库有自己的发版命令就先读懂再用它；没有就用 `npm version` 升版本号，只推送这个版本的标签。
 - 准备一行给你在真实终端（Real Terminal）运行的命令。
 
 ### 你在真实终端里做的事
@@ -46,7 +46,7 @@
 
 ## 配好之后的日常发版
 
-以后发版时，告诉 Agent 要发哪个版本（比如“release a patch”）。Agent 会升版本号并推送版本标签，GitHub Actions 随即替你完成自动发布（Automated Release）。
+以后发版时，告诉 Agent 要发哪个版本（比如“release a patch”）。Agent 会升版本号并推送版本标签，GitHub Actions 随即替你完成自动发布（Automated Release）。如果仓库已经有自己的发版命令（比如 `package.json` 里的 `release` 脚本），Agent 会先读懂它；只要它能做出你确认过的版本号、又不会在你的电脑上直接发布到 npm，就改用它，开始前会告诉你用哪条命令。
 
 ## 怎么确认成功了
 

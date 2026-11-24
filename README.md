@@ -20,6 +20,19 @@ This installs `npm-publish-guide` and `npm-version-guide` into the current proje
 - Update later: `npx skills update` [F-112]
 - Pin a version: `npx skills add Adonis0123/npm-release-guide@v0.1.0` (from the CLI docs; not run in our test [F-113])
 
+**Already have a `skills/` folder in your project?** The installer treats a folder named `skills/` as the folder of an agent called OpenClaw [F-116], so it may add two links there, `skills/npm-publish-guide` and `skills/npm-version-guide`, next to your own skills [F-118]. Add these two lines to `.gitignore` so Git leaves them out (without a `/` at the end, or Git will not ignore them [F-118]):
+
+```text
+skills/npm-publish-guide
+skills/npm-version-guide
+```
+
+You can also name the agents you use when installing (ids for other agents are in the [agent list](https://github.com/vercel-labs/skills/blob/main/docs/agents.md)) [F-117]. In our test a later `npx skills update` still added a link again, so keep the `.gitignore` lines too [F-118]:
+
+```sh
+npx skills add Adonis0123/npm-release-guide -a claude-code -a codex
+```
+
 Claude Code users can install as a plugin instead [F-114] (automatic updates for third-party marketplaces are off by default [F-115]):
 
 ```text
@@ -80,6 +93,9 @@ MIT
 - [F-113](docs/facts.md)
 - [F-114](docs/facts.md)
 - [F-115](docs/facts.md)
+- [F-116](docs/facts.md)
+- [F-117](docs/facts.md)
+- [F-118](docs/facts.md)
 
 [F-43]: docs/facts.md
 [F-44]: docs/facts.md
@@ -90,3 +106,6 @@ MIT
 [F-113]: docs/facts.md
 [F-114]: docs/facts.md
 [F-115]: docs/facts.md
+[F-116]: docs/facts.md
+[F-117]: docs/facts.md
+[F-118]: docs/facts.md

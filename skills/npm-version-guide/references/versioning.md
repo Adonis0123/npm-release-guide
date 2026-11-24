@@ -88,6 +88,8 @@ Notice the `-0` at the upper end: `^1.2.3` also excludes `2.0.0-alpha.1` [F-94].
 
 Tools such as Changesets and `release-please` exist and are helpful when you maintain many linked packages in one repository. This guide keeps `npm version` and a `v*` git tag [F-86], [F-87] because it stays simple: in GitHub Actions, tags pushed with the built-in `GITHUB_TOKEN` do not start other workflows [F-104] (`release-please-action` requires a separate personal access token for that reason [F-105]; `changesets/action` uses the GitHub-provided token unless you configure `github-token`, though whether its tags also fail to trigger workflows is unconfirmed and only inferred from [F-104] [F-106]), and Changesets does not support Staged Releases [F-107].
 
+If your repository already has its own release command (for example a `release` script in `package.json`, or one your `CONTRIBUTING.md` names), your Agent reads it first and uses it instead, as long as it makes the exact version you agreed to and does not publish from your computer. It tells you which command it will use when it asks for your yes, and says why if it falls back to `npm version` (for example for a Pre-release). When it runs `npm version` itself, the commit message copies the style of your last release commit, or `chore(release): v<version>` if there is none [F-119].
+
 ## A note on Calendar Versioning (CalVer)
 
 Calendar Versioning puts the release date in the version and deliberately does not signal Breaking Changes [F-108]; zero-padded dates like `2026.01.05` are not valid SemVer [F-109] (npm 10.9.9 also behaved this way in a test [F-110]), and npm's default `^` ranges would still read moving date parts as MAJOR or MINOR changes [F-109].
@@ -132,6 +134,7 @@ If you're stuck: ask your Agent "Which version should the next release be? Use n
 - [F-108](https://github.com/Adonis0123/npm-release-guide/blob/main/docs/facts.md)
 - [F-109](https://github.com/Adonis0123/npm-release-guide/blob/main/docs/facts.md)
 - [F-110](https://github.com/Adonis0123/npm-release-guide/blob/main/docs/facts.md)
+- [F-119](https://github.com/Adonis0123/npm-release-guide/blob/main/docs/facts.md)
 
 [F-53]: https://github.com/Adonis0123/npm-release-guide/blob/main/docs/facts.md
 [F-73]: https://github.com/Adonis0123/npm-release-guide/blob/main/docs/facts.md
@@ -169,3 +172,4 @@ If you're stuck: ask your Agent "Which version should the next release be? Use n
 [F-108]: https://github.com/Adonis0123/npm-release-guide/blob/main/docs/facts.md
 [F-109]: https://github.com/Adonis0123/npm-release-guide/blob/main/docs/facts.md
 [F-110]: https://github.com/Adonis0123/npm-release-guide/blob/main/docs/facts.md
+[F-119]: https://github.com/Adonis0123/npm-release-guide/blob/main/docs/facts.md

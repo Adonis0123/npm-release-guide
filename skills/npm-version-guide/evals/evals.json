@@ -95,6 +95,20 @@
         "The npm-version-guide skill was not loaded",
         "No npm version command was proposed"
       ]
+    },
+    {
+      "id": 9,
+      "should_trigger": true,
+      "prompt": "帮我把版本号改好准备发版。上次发版的提交是“🔖 chore(release): v1.4.0”，这次只修了一个 bug。package.json 里没有 release 脚本。",
+      "expected_output": "Runs scripts/suggest-version.mjs, sees release_script none and release_commit_format '🔖 chore(release): v%s', proposes exactly 1.4.1 in one Chinese yes/no question, and after a yes runs npm version 1.4.1 -m \"🔖 chore(release): v%s\". Does not push or publish.",
+      "files": [],
+      "expectations": [
+        "The Agent ran scripts/suggest-version.mjs before choosing a level",
+        "The Agent proposed exactly 1.4.1",
+        "The npm version command used the message '🔖 chore(release): v%s', not a different format",
+        "The Agent did not push or publish",
+        "The reply is in Chinese"
+      ]
     }
   ]
 }
